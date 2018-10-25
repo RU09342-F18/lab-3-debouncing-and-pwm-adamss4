@@ -1,18 +1,19 @@
 # Hardware PWM
-Now that you have done the software version of PWM, now it is time to start leveraging the other features of these Timer Modules.
-
-## Task
-You need to replicate the same behavior as in the software PWM, only using the Timer Modules ability to directly output to a GPIO Pin instead of managing them in software. One way to thing about what should happen is that unless your are doing some other things in your code, your system should initialize, set the Timer Modules, and then turn off the CPU.
-
-## Deliverables
-You will need to have two folders in this repository, one for each of the processors that you used for this part of the lab. Remember to replace this README with your own.
-
-### Hints
-Read up on the P1SEL registers as well as look at the Timer modules ability to multiplex.
-
-## Extra Work
-### Using ACLK
-Some of these microprocessors have a built in ACLK which is extremely slow compared to your up to 25MHz available on some of them. What is the overall impact on the system when using this clock? Can you actually use your PWM code with a clock that slow?
-
-### Ultra Low Power
-Using a combination of ACLK, Low Power Modes, and any other means you may deem necessary, optimize this PWM code to run at 50% duty cycle with a LED on the MSP430FR5994. In particular, time how long your code can run on the fully charged super capacitor. You do not need to worry about the button control in this case, and you will probably want to disable all the GPIO that you are not using (nudge, nudge, hint, hint).
+Along with software PWM methods, one can also generate a PWM singal using the hardware
+of the microcontrollers themselves. Instead of using multiple timers, the OUTMOD function,
+specifially OUTMOD_7, or output mode 7, which is reset/set mode.
+## Header file
+This code also uses the macros.h file found in the code forn software PWM for both sets
+of code. To see how to use it, view the header file section in the README found for software
+PWM.
+## Implementation
+Between the two boards, the code for hardware PWM is identical, thanks to the header file
+macros.h. Seperate functions were used to initilaize the timers, LED, and the button, to aid
+with any debugging that may need to be completed. The timer used for setting PWM was Timer A, 
+which was initialized with SMCLK in up mode. Due to this method being hardware PWM, the 
+OUTMOD function explained before was used. For reset/set mode, the CCTL output signal is 
+flipped when the TA0CCR1 interrupt flag occurs, and the value is set when the TA0CCR0 interrupt
+flag occurs. This method creates a PWM waveform, with duty cycle varying based on the value in 
+CCR1. The duty cycle was changed by incrementing the value of CCR1 by 100, or 10 percent.
+When the duty cycle was 100 percent and the button was pressed again, the duty cycle was 
+reset to 0 percent. 
